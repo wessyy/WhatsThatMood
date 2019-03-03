@@ -1,6 +1,7 @@
 import sys
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+from musixmatch import Musixmatch
 from pprint import pprint
 import requests
 import json
@@ -8,11 +9,14 @@ import json
 SPOTIPY_CLIENT_ID = '9f2764b3b60f47d88b66db6ff1f841be'
 SPOTIPY_CLIENT_SECRET = 'f82c39f204834d52ac51119395703b82'
 
+MUSIXMATCH_CLIENT_ID = 'f5a52968523f560cc30234c38bf644ab'
+
 client_credentials_manager = SpotifyClientCredentials(client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET)
 access_token = client_credentials_manager.get_access_token()
 auth_string = "Bearer " + access_token
 
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+mm = Musixmatch(MUSIXMATCH_CLIENT_ID)
 
 # # SEARCHING FOR STUFF EXAMPLE
 # results = sp.search(q='Passion Fruit', limit=1)
@@ -41,7 +45,13 @@ for category in category_ids:
 		data['track_name'] = item['track']['name']
 		data['artist_id'] = [artist['id'] for artist in item['track']['artists']]
 		data['artist_name'] = [artist['name'] for artist in item['track']['artists']]
-
+		print (data['track_name'])
+		tracks_results = mm.track_search(q_track = item['track']['name'], q_artist = data['artist_name'][0], page_size = 1, page = 1, s_track_rating = 'desc')['message']['body']['track_list'] # check
+		mm_track_id = tracks_results[0]['track']['track_id']
+		mm_lyrics_result = mm.track_lyrics_get(mm_track_id)['message']['body']['lyrics']['lyrics_body']
+		# data['partial_lyrics'] = mm.track_lyrics_get(mm_track_id) #check
+		print (mm_lyrics_result)
+		
 		track_id = item['track']['id']
 		# track_name = item['track']['name']
 		# artist_id = [artist['id'] for artist in item['track']['artists']]
@@ -64,6 +74,6 @@ for category in category_ids:
 		break
 	
 	break
-
+	
 
 
