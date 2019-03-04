@@ -11,6 +11,12 @@ SPOTIPY_CLIENT_SECRET = 'f82c39f204834d52ac51119395703b82'
 
 MUSIXMATCH_CLIENT_ID = 'f5a52968523f560cc30234c38bf644ab'
 
+GENIUS_CLIENT_ID = 'nGsCM36owuwGUH_9gSGRuJinaxMb8JuINkgigUz2uPTuu4zBR1k5R6NHC1eRuGia'
+GENIUS_CLIENT_ID_SECRET = 'Jf5ByTVljrgDlPmjYn2e0zLx41uM24bpjxIcEA3aC0D98ibXgmLd98PQPVazNd6QP5dUzNS0iFag6bf_L-UPYw'
+GENIUS_CLIENT_ACCESS_TOKEN = 'Zm_qKkcc6rTH16SzZpJCJu_qTYgniy7XxqDS0KcOBltEddWAm4bwcxAOFwkOYO8o'
+
+# website url: https://kimberlykwon.github.io/WhatsThatMoodSite/
+
 client_credentials_manager = SpotifyClientCredentials(client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET)
 access_token = client_credentials_manager.get_access_token()
 auth_string = "Bearer " + access_token
