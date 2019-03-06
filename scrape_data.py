@@ -30,6 +30,7 @@ moods = ['romantic', 'happy', 'sad', 'chill', 'angry', 'lively', 'peaceful', 'en
 
 tracks_by_mood = {}
 
+# Going through all moods in one fell swoop gets really slow so I went through each mood one by one
 for mood in moods[3:4]:
 	playlist_results = sp.search(q = mood, type = 'playlist', limit = 15)
 	playlist_items = playlist_results['playlists']['items']
