@@ -32,40 +32,53 @@ mm = Musixmatch(MUSIXMATCH_CLIENT_ID)
 
 categories = sp.categories()
 category_ids = [c['id'] for c in categories['categories']['items']]
+print (category_ids)
+
+moods = ['happy', 'sad', 'angry', 'joyful'] # change
+
+tracks_by_mood = {}
 
 # TODO: Aggregate data into json file. RN just parsing through to see what we get
 # Loop through all categories
-for category in category_ids:
-	# Get first playlist from category and then get the tracks on it
-	category_playlists = sp.category_playlists(category_id=category, limit=1)
-	endpoint = category_playlists['playlists']['items'][0]['tracks']['href']
+for mood in moods:
+# 	# Get first playlist from category and then get the tracks on it
+# 	category_playlists = sp.category_playlists(category_id=category, limit=1)
+		playlist_results = sp.search(q = mood, type = 'playlist', limit = 20)
+		playlist_items = playlist_results['playlists']['items']
 
-	response = requests.get(endpoint, headers={"Authorization": auth_string})
-	tracks = response.json()
+		tracks_by_mood[mood] = {}
+		for item in playlist_items:
+			endpoint = item['tracks']['href']
 
-	# Analyze tracks for audio features
-	for item in tracks['items']:
-		print("********** NEW TRACK ALERT *****************")
-		data = {}
-		data['track_id'] = item['track']['id']
-		data['track_name'] = item['track']['name']
-		data['artist_id'] = [artist['id'] for artist in item['track']['artists']]
-		data['artist_name'] = [artist['name'] for artist in item['track']['artists']]
-		print (data['track_name'])
-		tracks_results = mm.track_search(q_track = item['track']['name'], q_artist = data['artist_name'][0], page_size = 1, page = 1, s_track_rating = 'desc')['message']['body']['track_list'] # check
-		mm_track_id = tracks_results[0]['track']['track_id']
-		mm_lyrics_result = mm.track_lyrics_get(mm_track_id)['message']['body']['lyrics']['lyrics_body']
-		# data['partial_lyrics'] = mm.track_lyrics_get(mm_track_id) #check
-		print (mm_lyrics_result)
+			response = requests.get(endpoint, headers={"Authorization": auth_string})
+			tracks = response.json()
+			# Analyze tracks for audio features
+			for item in tracks['items']:
+				# print("********** NEW TRACK ALERT *****************")
+				data = {}
+				data['track_id'] = item['track']['id']
+				data['track_name'] = item['track']['name']
+				data['artist_id'] = [artist['id'] for artist in item['track']['artists']]
+				data['artist_name'] = [artist['name'] for artist in item['track']['artists']]
+				tracks_by_mood[mood][data['track_id']] = data # set key to id so we don't get repeats
+				# print ('\t' + data['track_name'])
+
+print (tracks_by_mood)
+# 		# ===== musixmatch stuff ===== 
+# 		# tracks_results = mm.track_search(q_track = item['track']['name'], q_artist = data['artist_name'][0], page_size = 1, page = 1, s_track_rating = 'desc')['message']['body']['track_list'] # check
+# 		# mm_track_id = tracks_results[0]['track']['track_id']
+# 		# mm_lyrics_result = mm.track_lyrics_get(mm_track_id)['message']['body']['lyrics']['lyrics_body']
+# 		# data['partial_lyrics'] = mm.track_lyrics_get(mm_track_id) #check
+# 		# print (mm_lyrics_result)
 		
-		track_id = item['track']['id']
-		# track_name = item['track']['name']
-		# artist_id = [artist['id'] for artist in item['track']['artists']]
-		# artist_name = [artist['name'] for artist in item['track']['artists']]
+# 		track_id = item['track']['id']
+# 		# track_name = item['track']['name']
+# 		# artist_id = [artist['id'] for artist in item['track']['artists']]
+# 		# artist_name = [artist['name'] for artist in item['track']['artists']]
 
-		# track = sp.track(track_id)
-		features = sp.audio_features(tracks = track_id)
-		analysis = sp.audio_analysis(track_id)  # Gives a whole bunch of shit
+# 		# track = sp.track(track_id)
+# 		features = sp.audio_features(tracks = track_id)
+# 		analysis = sp.audio_analysis(track_id)  # Gives a whole bunch of shit
 
 
 		# merged = {**features[0], **analysis[0]}
@@ -77,9 +90,9 @@ for category in category_ids:
 		# pprint(track)
 		# pprint(features)
 
-		break
+		# break
 	
-	break
+	# break
 	
 
 
