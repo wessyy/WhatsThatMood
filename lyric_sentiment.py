@@ -13,6 +13,7 @@ sia = SentimentIntensityAnalyzer()
 stop_words = list(stopwords.words("english"))
 
 
+#returns avg sentiment of all lines
 def analyze_sentiment(lyrics_arr):
 	tb_sentiments = []
 	nltk_sentiments = []
@@ -21,11 +22,15 @@ def analyze_sentiment(lyrics_arr):
 		tb_sent = blob.sentiment
 		tb_sentiments.append(tb_sent.polarity)
 		sia_polar =  sia.polarity_scores(line)
-		print(line)
-		print('nltk SIA: ',sia_polar, sia_polar['compound'])
+		# print(line)
+		# print('nltk SIA: ',sia_polar, sia_polar['compound'])
 		nltk_sentiments.append(sia_polar['compound'])
-		print("TextBlob sentiment: " , tb_sent)
-	return np.array(tb_sentiments), np.array(nltk_sentiments)
+		# print("TextBlob sentiment: " , tb_sent)
+
+	tb_mean = np.mean(np.array(tb_sentiments))
+	nltk_mean = np.mean(np.array(np.array(nltk_sentiments)))
+	# print("tb_mean: %s, nltk_mean: %s" % (tb_mean, nltk_mean))
+	return tb_mean, nltk_mean
 
 def clean_lyrics(lyrics):
 	repeats = 0
@@ -46,7 +51,7 @@ def clean_lyrics(lyrics):
 			line_stripped = line_stripped.replace(" " + word + " ", ' ')
 		output_lyrics.append(line_stripped)
 
-	print(output_lyrics)
+	# print(output_lyrics)
 	
 	# # return '\n'.join(output_lyrics)
 	return output_lyrics
@@ -56,14 +61,17 @@ def lyric_sentiment_main(title, name):
 	cleaned = clean_lyrics(lyrics)
 	tb, nltks = analyze_sentiment(cleaned)
 	tb1, nltks1 = analyze_sentiment(lyrics.split("\n"))
-	print("tb: ", np.mean(tb), np.mean(tb1))
-	print("nltks: ", np.mean(nltks), np.mean(nltks1))
+	print('tb: %s, nltks: %s' % (tb, nltks))
+	print('tb1: %s, nltks1: %s' % (tb1, nltks1))
 
+	#textblob is better.... still need to definitively choose between removing or keeping stopwords
+	return tb
+	
 
 
 
 if __name__ == "__main__":
-	lyric_sentiment_main("Over Now", "Post Malone")
+	lyric_sentiment_main("Disco Yes", "Tom Misch")
 	# lyric_sentiment_main("Happy", "Pharrell Williams")
 
 
