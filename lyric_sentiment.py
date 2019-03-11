@@ -66,13 +66,16 @@ def lyric_sentiment_main(title, name):
 
 	#textblob is better.... still need to definitively choose between removing or keeping stopwords
 	return tb
+
+
+def get_sentiment(title, name):
+	lyrics = get_song_lyrics(title, name)
+	if lyrics == None:
+		return "None"
+	cleaned = clean_lyrics(lyrics)
+	tb, nltks = analyze_sentiment(cleaned)
+	return tb
+
 	
-
-
-
 if __name__ == "__main__":
 	lyric_sentiment_main("Disco Yes", "Tom Misch")
-	# lyric_sentiment_main("Happy", "Pharrell Williams")
-
-
-

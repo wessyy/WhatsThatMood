@@ -5,6 +5,7 @@ import lyricsgenius
 from pprint import pprint
 import requests
 import json
+from lyric_sentiment import get_sentiment
 
 SPOTIPY_CLIENT_ID = '9f2764b3b60f47d88b66db6ff1f841be'
 SPOTIPY_CLIENT_SECRET = 'f82c39f204834d52ac51119395703b82'
@@ -26,47 +27,49 @@ categories = sp.categories()
 category_ids = [c['id'] for c in categories['categories']['items']]
 
 
-moods = ['romantic', 'happy', 'sad', 'chill', 'angry', 'lively', 'peaceful', 'energizing', 'upbeat', 'sensual', 'cool'] # change
-
-tracks_by_mood = {}
-
-# Going through all moods in one fell swoop gets really slow so I went through each mood one by one
-for mood in moods[3:4]:
+def scrape_data(mood):
+	output_file = mood + ".txt"
 	playlist_results = sp.search(q = mood, type = 'playlist', limit = 15)
 	playlist_items = playlist_results['playlists']['items']
 
-	tracks_by_mood[mood] = {}
+	tracks_by_mood = {}
 	for item in playlist_items:
+		print("Analyzing songs from:", item['name'])
 		endpoint = item['tracks']['href']
 
 		response = requests.get(endpoint, headers={"Authorization": auth_string})
 		tracks = response.json()
-		# Analyze tracks for audio features
-		for item in tracks['items']:
-			data = {}
-			data['track_id'] = item['track']['id']
-			data['track_name'] = item['track']['name']
-			data['artist_id'] = [artist['id'] for artist in item['track']['artists']]
-			data['artist_name'] = [artist['name'] for artist in item['track']['artists']]
-			
-			if data['track_id']:
-				features = sp.audio_features(tracks = data['track_id'])
-				data['features'] = features
+		try:
+			for item in tracks['items']:
+				data = {}
+				try:
+					data['track_id'] = item['track']['id']
+					data['track_name'] = item['track']['name']
+					data['artist_id'] = [artist['id'] for artist in item['track']['artists']]
+					data['artist_name'] = [artist['name'] for artist in item['track']['artists']]
 
-			# === Might be way too much stuff ===
-			# analysis = sp.audio_analysis(data['track_id'])
-			# data['analysis'] = analysis  				
-			
-			tracks_by_mood[mood][data['track_id']] = data # set key to id so we don't get repeats
+					lyrics_sentiment = get_sentiment(data['track_name'], data['artist_name'])
+					data['lyric_sentiment'] = lyrics_sentiment
+					
+					if data['track_id']:
+						features = sp.audio_features(tracks = data['track_id'])
+						data['features'] = features		
+					
+					tracks_by_mood[data['track_id']] = data # set key to id so we don't get repeats
+					with open(output_file, 'w') as outfile:
+						json.dump(tracks_by_mood, outfile, indent=4) 	
+				except:
+					continue
+		except:
+			continue
+	print("Done")
 
-
-
-
-with open('chill.txt', 'w') as outfile:
-	json.dump(tracks_by_mood, outfile, indent=4)
 
 		
 
-	
+if __name__ == "__main__":
+	moods = ['romantic', 'happy', 'sad', 'chill', 'angry', 'peaceful', 'energizing', 'upbeat', 'sensual'] # change
+	mood = "chill"
+	scrape_data(mood)
 
 
