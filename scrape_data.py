@@ -69,7 +69,7 @@ def scrape_data(mood):
 
 if __name__ == "__main__":
 	moods = ['romantic', 'happy', 'sad', 'chill', 'angry', 'peaceful', 'energizing', 'upbeat', 'sensual'] # change
-	mood = "chill"
+	mood = "angry"
 	scrape_data(mood)
 
 
