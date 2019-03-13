@@ -4,14 +4,14 @@ from pprint import pprint
 import numpy as np
 import math
 
+# Creating our features dataset X and Y
+
 # Features: lyric_sentiment and everything in "features" except type, id, uri, track_href, analysis_url
 
 features = ['lyric_sentiment', "danceability", "energy", "loudness", "mode", "acousticness", "instrumentalness", "valence", "tempo"]
 path_to_json = './data/'
 json_files = [pos_json for pos_json in os.listdir(path_to_json) if pos_json.endswith('.txt')]
 
-
-# How many songs in romantic mood data set
 X = []
 y = []
 for file in json_files:	

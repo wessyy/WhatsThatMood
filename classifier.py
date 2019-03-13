@@ -5,6 +5,8 @@ import json
 from pprint import pprint
 import numpy as np
 
+# Creating our KNN Model
+
 def scale(point):
 	min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0,1))
 	scaled = min_max_scaler.fit_transform(point)
@@ -30,31 +32,18 @@ X_train_scaled = min_max_scaler.fit_transform(X_train_data)
 X_test_scaled = min_max_scaler.fit_transform(X_test_data)
 
 
-print(X_test[0][0:2])
-print(y_test[0])
-
-# # Create KNN classifier
-# knn = KNeighborsClassifier(n_neighbors = 5, algorithm="brute")
-# # Fit the classifier to the data
-# knn.fit(X_train,y_train)
-
 knn = KNeighborsClassifier()
 knn.fit(X_train_scaled, y_train)
+# print(knn.predict(X_test[0:5]))
+# print(knn.score(X_test, y_test))
 
 
 def classify(data):
-	# here I am taking a single point only
 	data_scaled = scale(data)
 	distances, indices = knn.kneighbors(data_scaled, n_neighbors=5)
 
-	# print(knn.predict(X_test[0:5]))
-	# print(knn.score(X_test, y_test))
-
 	print(distances)
 	output = [X_train[index][0:2] for index in indices[0]]
-
-
-
 	pprint(output)
 
 
