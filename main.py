@@ -7,6 +7,8 @@ import requests
 import json
 from lyric_sentiment import get_sentiment
 import math
+import numpy as np
+import matplotlib.pyplot as plt
 from classifier import classify
 
 
@@ -39,12 +41,35 @@ def analyze_features(artist, song):
 	return data
 
 
+def classify_song():
+	title = input("enter the song title, then hit enter.\n")
+	artist = input("enter the artist, then hit enter.\n")
+
+	features = analyze_features(artist, title)
+	print("features: ")
+	pprint(features)
+
+	results = classify([features])
+
+	#graph results
+	x = ['angry', 'chill', 'energizing', 'happy', 'peaceful', 'romantic', 'sad', 'sensual', 'upbeat']
+	y = np.zeros(len(x))
+	for mood in results:
+		index = x.index(mood)
+		y[index] += 1
+
+	plt.bar(x, y)
+	plt.title("predicted moods for %s by %s" % (title , artist))
+	plt.show()
+	print("plot: ", plt)
+
 
 if __name__ == '__main__':
 	# Enter artist and song you want to check
-	artist = "Daddy Yankee"
-	song = "Limbo"
-	features = analyze_features(artist, song)
-	classify([features])
+	# artist = "Daddy Yankee"
+	# song = "Limbo"
+	# features = analyze_features(artist, song)
+	# classify([features])
+	classify_song()
 
 

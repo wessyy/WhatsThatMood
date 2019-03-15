@@ -6,6 +6,7 @@ import json
 from pprint import pprint
 import numpy as np
 
+
 def warn(*args, **kwargs):
     pass
 import warnings
@@ -62,20 +63,41 @@ def classify(data):
 	X, y = generate_X_and_Y()
 	X_data = strip_song_and_artist(X)
 	X_scaled = scale(X_data)
-	
-	knn = KNeighborsClassifier(n_neighbors=5)
-	knn.fit(X_scaled, y)
+
+	knn = KNeighborsClassifier(n_neighbors=20)
+	knn.fit(X_data, y)
 
 	data_scaled = scale(data)
-	print("Predicted Mood:", knn.predict(data_scaled))
-	distances, indices = knn.kneighbors(data_scaled, n_neighbors=5)
+	print("Predicted Mood:", knn.predict(data))
+	print("accuracy:", knn.score(X_data, y))
+	distances, indices = knn.kneighbors(data, n_neighbors=20)
 
 	# Moods + songs & artists of K nearest neighbors
 	moods = [y[index] for index in indices[0]]
 	songs_and_artists = [X[index][0:2] for index in indices[0]]
+	sa_classes = [y[index] for index in indices[0]]
+	print("moods:")
 	pprint(moods)
-	pprint(songs_and_artists)
+	# print("indices:")
+	# pprint(indices)
+	for i in range(0, len(songs_and_artists)):
+		print(songs_and_artists[i])
+		print(sa_classes[i])
+	# print("songs and artists:")
+	# pprint(songs_and_artists)
+	# print("their moods:")
+	# pprint(sa_classes)
+
+	return moods
+
+
 
 
 if __name__ == '__main__':
 	test()
+
+
+
+
+
+
