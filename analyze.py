@@ -23,8 +23,7 @@ for file in json_files:
 		for key in data:
 			row = []
 			if 'features' in data[key]:
-				row.append(data[key]["track_name"])
-				row.append(data[key]["artist_name"][0])
+				row.append(key)
 				if data[key]['lyric_sentiment'] == "None" or math.isnan(data[key]['lyric_sentiment']):
 					row.append(0)
 				else:
