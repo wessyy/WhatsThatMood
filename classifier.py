@@ -35,7 +35,6 @@ def generate_X_and_Y():
 def strip_song_and_artist(X):
 	return [row[2:] for row in X]
 
-
 def test():
 	X, y = generate_X_and_Y()
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1, stratify=y)
@@ -45,10 +44,10 @@ def test():
 	X_test_data = strip_song_and_artist(X_test)
 
 	# Scale
-	X_train_scaled = scale(X_train_data)
-	X_test_scaled = scale(X_test_data)
+	X_train_scaled = preprocessing.scale(X_train_data)
+	X_test_scaled = preprocessing.scale(X_test_data)
 
-	knn = KNeighborsClassifier(n_neighbors=5)
+	knn = KNeighborsClassifier(n_neighbors=20, weights='distance', algorithm='brute')
 	knn.fit(X_train_scaled, y_train)
 	print(knn.score(X_test_scaled, y_test))
 	
