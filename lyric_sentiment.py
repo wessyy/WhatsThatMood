@@ -78,4 +78,4 @@ def get_sentiment(title, name):
 
 	
 if __name__ == "__main__":
-	lyric_sentiment_main("Disco Yes", "Tom Misch")
+	lyric_sentiment_main("Happy", "Pharrell Williams")

@@ -48,14 +48,17 @@ def scrape_data(mood):
 					data['artist_id'] = [artist['id'] for artist in item['track']['artists']]
 					data['artist_name'] = [artist['name'] for artist in item['track']['artists']]
 
-					lyrics_sentiment = get_sentiment(data['track_name'], data['artist_name'])
+					lyrics_sentiment = get_sentiment(data['track_name'], data['artist_name'][0])
+					# print("searching song %s by %s" % (data['track_name'], data['artist_name'][0]))
 					data['lyric_sentiment'] = lyrics_sentiment
 					
 					if data['track_id']:
 						features = sp.audio_features(tracks = data['track_id'])
 						data['features'] = features		
-					
-					tracks_by_mood[data['track_id']] = data # set key to id so we don't get repeats
+
+					key = ' '.join([data['track_name'], ' '.join(data['artist_name'])])
+					# print(key)
+					tracks_by_mood[key] = data # set key to id so we don't get repeats
 					with open(output_file, 'w') as outfile:
 						json.dump(tracks_by_mood, outfile, indent=4) 	
 				except:
@@ -69,7 +72,7 @@ def scrape_data(mood):
 
 if __name__ == "__main__":
 	moods = ['romantic', 'happy', 'sad', 'chill', 'angry', 'peaceful', 'energizing', 'upbeat', 'sensual'] # change
-	mood = "angry"
+	mood = "energizing"
 	scrape_data(mood)
 
 
