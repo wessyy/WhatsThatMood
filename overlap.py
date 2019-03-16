@@ -21,6 +21,8 @@ def find_all_moods_all_songs():
 					moods_dict[songdata] = [mood]
 
 	# pprint(moods_dict)
+	with open("overlap.txt", 'w') as outfile:
+		json.dump(moods_dict, outfile, indent=4)
 	return moods_dict
 
 def find_overlap(mood1, mood2):
@@ -48,14 +50,18 @@ def find_overlap(mood1, mood2):
 
 
 if __name__ == "__main__":
-	moods = ['romantic', 'happy', 'sad', 'chill', 'angry', 'peaceful', 'energizing', 'upbeat', 'sensual']
+	# moods = ['romantic', 'happy', 'sad', 'chill', 'angry', 'peaceful', 'energizing', 'upbeat', 'sensual']
+
+	path_to_json = './data/'
+	moods = [pos_json[:-4] for pos_json in os.listdir(path_to_json) if pos_json.endswith('.txt')]
+
 	overlaps = {}
 	for i in range(0, len(moods)-1):
 		for j in range(i+1, len(moods)):
 			key = moods[i] + ' ' + moods[j]
 			overlaps[key] = find_overlap(moods[i], moods[j])
 	# print(find_overlap('upbeat', 'happy'))
-	pprint(overlaps)
+	# pprint(overlaps)
 
 
 

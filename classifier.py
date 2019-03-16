@@ -2,6 +2,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn import preprocessing
+from sklearn.metrics import confusion_matrix
 import json
 from pprint import pprint
 import numpy as np
@@ -33,9 +34,32 @@ def generate_X_and_Y():
 	return X, y
 
 def strip_song_and_artist(X):
-	return [row[2:] for row in X]
+	return [row[1:] for row in X]
 
-def test():
+# def test():
+# 	X, y = generate_X_and_Y()
+# 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1, stratify=y)
+
+# 	# Take out song and artist
+# 	X_train_data = strip_song_and_artist(X_train)
+# 	X_test_data = strip_song_and_artist(X_test)
+
+# 	# Scale
+# 	X_train_scaled = preprocessing.scale(X_train_data)
+# 	X_test_scaled = preprocessing.scale(X_test_data)
+
+# 	knn = KNeighborsClassifier(n_neighbors=20, weights='distance', algorithm='brute')
+# 	knn.fit(X_train_scaled, y_train)
+# 	print(knn.score(X_test_scaled, y_test))
+	
+# 	# # Using cross validation look at accuracy
+# 	# X_data = [row[2:] for row in X]
+# 	# cv_scores = cross_val_score(knn, X_data, y, cv=5)
+# 	# print(cv_scores)
+# 	# print("cv_scores mean:{}".format(np.mean(cv_scores)))
+
+
+def score():
 	X, y = generate_X_and_Y()
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1, stratify=y)
 
@@ -47,15 +71,28 @@ def test():
 	X_train_scaled = preprocessing.scale(X_train_data)
 	X_test_scaled = preprocessing.scale(X_test_data)
 
+	# fit our model
 	knn = KNeighborsClassifier(n_neighbors=20, weights='distance', algorithm='brute')
 	knn.fit(X_train_scaled, y_train)
-	print(knn.score(X_test_scaled, y_test))
-	
-	# # Using cross validation look at accuracy
-	# X_data = [row[2:] for row in X]
-	# cv_scores = cross_val_score(knn, X_data, y, cv=5)
-	# print(cv_scores)
-	# print("cv_scores mean:{}".format(np.mean(cv_scores)))
+
+	correct = 0
+	total = 0
+	with open('overlap.txt', 'r') as json_file:
+		overlap_data = json.load(json_file)
+		for i in range(0, len(X_test_scaled)):
+			prediction = knn.predict([X_test_scaled[i]])
+			# print("prediction: ", prediction)
+			# print(overlap_data[X_test[i][0]])
+			if prediction in overlap_data[X_test[i][0]]:
+				correct += 1
+			total += 1
+
+
+	print(correct/total)
+	return correct/total
+
+
+
 
 
 def classify(data):
@@ -75,8 +112,8 @@ def classify(data):
 	moods = [y[index] for index in indices[0]]
 	songs_and_artists = [X[index][0:2] for index in indices[0]]
 	sa_classes = [y[index] for index in indices[0]]
-	print("moods:")
-	pprint(moods)
+	# print("moods:")
+	# pprint(moods)
 	# print("indices:")
 	# pprint(indices)
 	for i in range(0, len(songs_and_artists)):
@@ -93,7 +130,7 @@ def classify(data):
 
 
 if __name__ == '__main__':
-	test()
+	score()
 
 
 
