@@ -77,21 +77,72 @@ def score():
 
 	correct = 0
 	total = 0
+	predictions = []
 	with open('overlap.txt', 'r') as json_file:
 		overlap_data = json.load(json_file)
 		for i in range(0, len(X_test_scaled)):
 			prediction = knn.predict([X_test_scaled[i]])
+			predictions.append(prediction)
 			# print("prediction: ", prediction)
 			# print(overlap_data[X_test[i][0]])
 			if prediction in overlap_data[X_test[i][0]]:
 				correct += 1
 			total += 1
 
+	matrix = confusion_matrix(y_test, predictions)
+	pprint(matrix)
 
 	print(correct/total)
 	return correct/total
 
 
+
+def ablation_scoring():
+	X, y = generate_X_and_Y()
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1, stratify=y)
+
+	# Take out song and artist
+	X_train_data = strip_song_and_artist(X_train)
+	X_test_data = strip_song_and_artist(X_test)
+
+	# Scale
+	X_train_scaled = preprocessing.scale(X_train_data)
+	X_test_scaled = preprocessing.scale(X_test_data)
+
+	# strip out each feature for ablation tests
+	features = ['lyric_sentiment', "danceability", "energy", "loudness", "mode", "acousticness", "instrumentalness", "valence", "tempo"]
+	for i in range(0, len(X_train_data[0])-1):
+		print("removed feature " , features[i])
+		X_train_removed = []
+		X_test_removed = []
+		for item in X_train_scaled:
+			newItem = item[:i].tolist() + item[i+1:].tolist()
+			X_train_removed.append(newItem)
+		for item in X_test_scaled:
+			newItem = item[:i].tolist() + item[i+1:].tolist()
+			X_test_removed.append(newItem)
+
+		# fit our model
+		knn = KNeighborsClassifier(n_neighbors=20, weights='distance', algorithm='brute')
+		knn.fit(X_train_removed, y_train)
+
+		correct = 0
+		total = 0
+		predictions = []
+		with open('overlap.txt', 'r') as json_file:
+			overlap_data = json.load(json_file)
+			for i in range(0, len(X_test_removed)):
+				prediction = knn.predict([X_test_removed[i]])
+				predictions.append(prediction)
+				# print("prediction: ", prediction)
+				# print(overlap_data[X_test[i][0]])
+				if prediction in overlap_data[X_test[i][0]]:
+					correct += 1
+				total += 1
+		print(correct/total)
+		matrix = confusion_matrix(y_test, predictions)
+		pprint(matrix)
+		print("\n")
 
 
 

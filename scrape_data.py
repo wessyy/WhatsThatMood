@@ -29,7 +29,7 @@ category_ids = [c['id'] for c in categories['categories']['items']]
 
 def scrape_data(mood):
 	output_file = mood + ".txt"
-	playlist_results = sp.search(q = mood, type = 'playlist', limit = 15)
+	playlist_results = sp.search(q = mood, type = 'playlist', limit = 20)
 	playlist_items = playlist_results['playlists']['items']
 
 	tracks_by_mood = {}
