@@ -6,10 +6,11 @@ from sklearn.metrics import confusion_matrix
 import json
 from pprint import pprint
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def warn(*args, **kwargs):
-    pass
+	pass
 import warnings
 warnings.warn = warn
 
@@ -93,7 +94,19 @@ def score():
 	pprint(matrix)
 
 	print(correct/total)
-	return correct/total
+	fig, ax = plt.subplots()
+	plt.imshow(matrix)
+	moods = ['angry', 'chill', 'energizing', 'happy', 'peaceful', 'romantic', 'sad', 'sensual', 'upbeat']
+	ax.set_xticks(np.arange(len(moods)))
+	ax.set_yticks(np.arange(len(moods)))
+	ax.set_xticklabels(moods)
+	ax.set_yticklabels(moods)
+
+	for i in range(len(moods)):
+		for j in range(len(moods)):
+			text = ax.text(j, i, matrix[i, j], ha="center", va="center", color="w")
+	plt.show()
+	# return correct/total
 
 
 
@@ -113,6 +126,7 @@ def ablation_scoring():
 	features = ['lyric_sentiment', "danceability", "energy", "loudness", "mode", "acousticness", "instrumentalness", "valence", "tempo"]
 	for i in range(0, len(X_train_data[0])-1):
 		print("removed feature " , features[i])
+		title = "feature " + features[i] + " removed"
 		X_train_removed = []
 		X_test_removed = []
 		for item in X_train_scaled:
@@ -143,6 +157,11 @@ def ablation_scoring():
 		matrix = confusion_matrix(y_test, predictions)
 		pprint(matrix)
 		print("\n")
+
+		fig = plt.figure()
+		plt.matshow(matrix)
+		fig.suptitle(title)
+		
 
 
 
